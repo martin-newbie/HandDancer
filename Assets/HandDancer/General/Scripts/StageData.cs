@@ -44,7 +44,7 @@ public class MusicData
     public AudioClip audio;
     public AudioClip preview;
 
-    public void LoadDatas(string songTitle, string path)
+    public IEnumerator LoadDatas(string songTitle, string path)
     {
         path += songTitle;
         path = path.Replace("\r", "");
@@ -56,6 +56,7 @@ public class MusicData
         if (!File.Exists(path + "/Data"))
         {
             StreamWriter stream = File.CreateText("Assets/Resources/" + path + "/Data.txt");
+            yield return stream;
             stream.WriteLine(songTitle);
             stream.WriteLine(0);
             stream.WriteLine(0);
@@ -71,7 +72,7 @@ public class MusicData
         difficultyName = new List<string>(new string[difficultyCount]);
         difficultyLevel = new List<float>(new float[difficultyCount]);
 
-        if (difficultyCount <= 0) return;
+        if (difficultyCount <= 0) yield break;
 
         var difNameSplit = dataSplit[idx++].Split(',');
         var difLevelSplit = dataSplit[idx++].Split(',');
@@ -119,10 +120,10 @@ public class StageData
         foreach (var item in node_script)
         {
             string time = item.activeTime.ToString();
-            string pos = ((int)item.nodePos).ToString();
-            string clapType = item.nodeType.ToString();
+            string nodePos = ((int)item.nodePos).ToString();
+            string nodeType = ((int)item.nodeType).ToString();
 
-            sb.Append(string.Format("{0}\t{1}\t{2}\n", time, pos, clapType));
+            sb.Append(string.Format("{0}\t{1}\t{2}\n", time, nodePos, nodeType));
         }
 
         result = sb.ToString();

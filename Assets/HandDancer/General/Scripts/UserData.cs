@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UserData :MonoBehaviour
+public class UserData : MonoBehaviour
 {
     private static UserData _instance = null;
     public static UserData Instance => _instance;
@@ -20,10 +20,10 @@ public class UserData :MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
-        InitSongList();
+        StartCoroutine(InitSongList());
     }
 
-    void InitSongList()
+    IEnumerator InitSongList()
     {
         activeSongsList = new List<string>();
         musicDataList = new List<MusicData>();
@@ -37,7 +37,7 @@ public class UserData :MonoBehaviour
         foreach (var item in activeSongsList)
         {
             var musicData = new MusicData();
-            musicData.LoadDatas(item, "Beatmaps/");
+            yield return StartCoroutine(musicData.LoadDatas(item, "Beatmaps/"));
             musicDataList.Add(musicData);
         }
 
