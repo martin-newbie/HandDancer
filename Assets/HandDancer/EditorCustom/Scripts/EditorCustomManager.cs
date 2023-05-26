@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -195,4 +196,19 @@ public class EditorCustomManager : MonoBehaviour
         editorNodeList = editorNodeList.OrderBy((item) => item.curTime).ToList();
     }
 
+    public void OnExportButton()
+    {
+        // check node error exist (return nothing when error exist)
+        // 
+
+        var orderedList = editorNodeList.OrderBy((item) => item.curTime).ToList();
+        StringBuilder exportSb = new StringBuilder();
+        foreach (var item in orderedList)
+        {
+            exportSb.Append(item.GetResultData().GetNodeDataStr());
+        }
+
+
+        StageData resultStage = new StageData(exportSb.ToString());
+    }
 }

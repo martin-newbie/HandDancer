@@ -108,8 +108,6 @@ public class StageData
             NodeData nodeData = new NodeData(strData);
             node_script.Add(nodeData);
         }
-
-        node_script = node_script.OrderBy((item) => item.activeTime).ToList();
     }
 
     public string GetJsonParse()
@@ -119,11 +117,7 @@ public class StageData
 
         foreach (var item in node_script)
         {
-            string time = item.activeTime.ToString();
-            string nodePos = ((int)item.nodePos).ToString();
-            string nodeType = ((int)item.nodeType).ToString();
-
-            sb.Append(string.Format("{0}\t{1}\t{2}\n", time, nodePos, nodeType));
+            sb.Append(item.GetNodeDataStr());
         }
 
         result = sb.ToString();
@@ -135,8 +129,8 @@ public class StageData
 public struct NodeData
 {
     public float activeTime;
-    public NodeType nodeType;
     public NodePos nodePos;
+    public NodeType nodeType;
 
     public NodeData(float activeTime, int nodePos, int nodeType)
     {
@@ -157,5 +151,10 @@ public struct NodeData
     {
         time = Mathf.Clamp(time, 0f, maxTime);
         activeTime = time;
+    }
+
+    public string GetNodeDataStr()
+    {
+        return string.Format("{0}\t{1}\t{2}\n", activeTime, (int)nodePos, (int)nodeType);
     }
 }

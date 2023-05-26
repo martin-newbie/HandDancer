@@ -12,7 +12,7 @@ public class EditorNode : MonoBehaviour, IDragHandler
 
     [Header("UI")]
     public Image nodeImg;
-    public float curTime;
+    public float curTime => thisData.activeTime;
     NodeData thisData;
 
     [HideInInspector] public RectTransform rect;
@@ -22,7 +22,6 @@ public class EditorNode : MonoBehaviour, IDragHandler
         rect = GetComponent<RectTransform>();
         
         thisData = data;
-        curTime = thisData.activeTime;
 
         float xPos;
         switch (thisData.nodePos)
@@ -60,7 +59,7 @@ public class EditorNode : MonoBehaviour, IDragHandler
 
     public void ChangeTime(float time)
     {
-        curTime = time;
+        thisData.activeTime = time;
         rect.anchoredPosition = new Vector2(0, curTime * 100f);
     }
 
