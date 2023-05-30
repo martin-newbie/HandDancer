@@ -177,12 +177,10 @@ public class EditorCustomManager : MonoBehaviour
 
     public void OnAddNodeButton()
     {
-        NodeData data = new NodeData(float.Parse(timeInput.text), 0, 0);
+        NodeData data = new NodeData(float.Parse(curTimeTxt.text), 0, 0);
         var temp = Instantiate(nodePrefab, nodeParent);
         temp.InitNode(data);
         editorNodeList.Add(temp);
-
-        editorNodeList = editorNodeList.OrderBy((item) => item.curTime).ToList();
     }
 
     public void OnDestroyNodeButton()

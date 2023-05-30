@@ -22,6 +22,7 @@ public class ButtonLayoutGroup : MonoBehaviour, IKeyInput
     int topIdx;
     int bottomIdx;
 
+    bool isStart = false;
 
     IEnumerator Start()
     {
@@ -62,6 +63,8 @@ public class ButtonLayoutGroup : MonoBehaviour, IKeyInput
         }
 
         buttons[highIdx].SetHighlight();
+
+        isStart = true;
     }
 
     float inputDelay = 0.075f, curDelay;
@@ -70,6 +73,8 @@ public class ButtonLayoutGroup : MonoBehaviour, IKeyInput
 
     void Update()
     {
+        if (!isStart) return;
+
         for (int i = 0; i < buttons.Count; i++)
         {
             if (i == highIdx)
