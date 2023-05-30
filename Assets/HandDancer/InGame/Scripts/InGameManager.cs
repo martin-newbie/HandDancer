@@ -127,7 +127,7 @@ public class InGameManager : MonoBehaviour
                 if (GetLeftKeyUp())
                 {
                     isLeftDown = false;
-                    if (timer - leftStartTime > 0.5f)
+                    if (timer - leftStartTime > 0.25f)
                     {
                         // add long note start with leftStartTime at left
                         // add long note end with timer at left
@@ -158,7 +158,7 @@ public class InGameManager : MonoBehaviour
                 if (GetRightKeyUp())
                 {
                     isRightDown = false;
-                    if (timer - rightStartTime > 0.5f)
+                    if (timer - rightStartTime > 0.25f)
                     {
                         // add long note start with rightStartTime at right
                         // add long note end with timer at left
