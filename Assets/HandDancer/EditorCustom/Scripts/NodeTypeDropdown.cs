@@ -8,7 +8,10 @@ public class NodeTypeDropdown : MonoBehaviour
 {
     public NodeInfoPanel infoPanel;
 
-    // 스프라이트 받아서 추가하는거 필요함
+    [Header("Sprite")]
+    public Sprite[] nodeSprites;
+
+    [Header("UI")]
     public Image graphic;
     public Transform itemContent;
     public Button itemPrefab;
@@ -17,7 +20,7 @@ public class NodeTypeDropdown : MonoBehaviour
     public int curIdx = 0;
 
 
-    public void InitDropdownUI()
+    public void InitDropdownUI(int curIdx)
     {
         int typeCount = Enum.GetValues(typeof(NodeType)).Length;
 
@@ -27,7 +30,9 @@ public class NodeTypeDropdown : MonoBehaviour
 
             int idx = i;
             tempBtn.onClick.AddListener(() => OnDropdownButtonDown(idx));
+            tempBtn.image.sprite = nodeSprites[i];
         }
+        graphic.sprite = nodeSprites[curIdx];
         itemPrefab.gameObject.SetActive(false);
     }
 

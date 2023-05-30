@@ -26,7 +26,7 @@ public class NodeInfoPanel : MonoBehaviour
     {
         linkedNode = node;
         nodeInfoPanelBackground.SetActive(true);
-        dropDown.InitDropdownUI();
+        dropDown.InitDropdownUI((int)linkedNode.GetResultData().nodeType);
 
         InitUI();
     }
