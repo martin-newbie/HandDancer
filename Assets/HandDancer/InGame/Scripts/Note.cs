@@ -13,24 +13,20 @@ public class Note : MonoBehaviour
 {
     int vertices = 15;
 
-    NodeType type;
+    EHitState type;
     LineRenderer line;
-    float startRad;
-    float targetRad;
-    
+    float startRad = 10f;
+    float targetRad = 0f;
+
     [SerializeField] int dir = 0;
     [SerializeField] float radius;
 
     bool isInit;
 
-    public void Init(NodeType type, int dir, float startRad, float targetRad, float dur)
+    public void Init(EHitState type, int dir, float dur)
     {
-
         this.type = type;
         this.dir = dir;
-        this.startRad = startRad;
-        this.targetRad = targetRad;
-
 
         isInit = true;
         StartCoroutine(MoveRoutine(dur));
@@ -59,14 +55,46 @@ public class Note : MonoBehaviour
         line = GetComponent<LineRenderer>();
     }
 
+    public void CheckState()
+    {
+        if (radius <= 4f && HitCondition())
+        {
+            if (radius >= 3.11f && radius <= 3.3f)
+            {
+                // perfect
+                InGameManager.Instance.SetAnimState(dir, type);
+                pushNote();
+            }
+            else
+            {
+                // great
+                InGameManager.Instance.SetAnimState(dir, type);
+                pushNote();
+            }
+
+        }
+
+        if (radius <= 2.85f)
+        {
+            // miss
+            pushNote();
+        }
+
+        void pushNote()
+        {
+            InGameManager.Instance.RemoveQueue(dir);
+            InGameManager.Instance.PushNote(this);
+        }
+    }
+
+    bool HitCondition()
+    {
+        return dir == 1 ? InGameManager.Instance.isRightDown : InGameManager.Instance.isLeftDown;
+    }
+
     private void Update()
     {
         RenderLine();
-
-        if(radius <= 2.85f)
-        {
-            // miss
-        }
     }
 
     void RenderLine()
@@ -81,20 +109,5 @@ public class Note : MonoBehaviour
         }
         line.SetPositions(verticePos);
 
-    }
-
-    public void GetInput()
-    {
-        if(radius <= 4f)
-        {
-            if(radius >= 3.11f && radius <= 3.3f)
-            {
-                // perfect
-            }
-            else
-            {
-                // great
-            }
-        }
     }
 }

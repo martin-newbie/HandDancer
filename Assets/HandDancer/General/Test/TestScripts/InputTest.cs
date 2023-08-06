@@ -4,20 +4,32 @@ using UnityEngine;
 
 public class InputTest : MonoBehaviour
 {
-
+    bool left, right;
 
     void Update()
     {
-        GetInput();
+        if (Input.GetKeyDown(KeyCode.J) && !right) right = true;
+        if (Input.GetKeyDown(KeyCode.F) && !left) left = true;
     }
 
-    void GetInput()
+    void FixedUpdate()
     {
-
-        if(Input.GetKeyDown(KeyCode.D) && Input.GetKey(KeyCode.K))
+        if(right && left)
         {
-            Debug.Log("both key (left keydown / right key)");
+            Debug.Log("is both down");
+
+        }
+        else if(right && !left)
+        {
+            Debug.Log("is right down");
+        }
+        else if(!right && left)
+        {
+            Debug.Log("is left down");
         }
 
+        right = false;
+        left = false;
     }
+
 }
