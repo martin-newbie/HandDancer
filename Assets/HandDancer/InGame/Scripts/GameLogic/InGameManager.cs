@@ -12,11 +12,17 @@ public enum EGameState
     Outro
 }
 
-public enum EHitState
+public enum ENoteType
 {
     SINGLE,
     LONG,
-    LONG_END,
+}
+
+public enum EHitState
+{
+    DOWN,
+    HOLD,
+    HOLD_END,
 }
 
 
@@ -28,44 +34,55 @@ public class InGameManager : MonoBehaviour
         Instance = this;
     }
 
-    public SkeletonGraphic anim;
+    // about animation
+    [SerializeField] SkeletonGraphic anim;
+    TrackEntry track;
+    EHitState hitType;
 
+    int dirIdx;
+    bool aniTrigger;
+
+    IGameLogic curGameLogic;
     [SerializeField] PlayUIManager gameUIManager;
+
+    // about info
+    [Header("Info")]
     [SerializeField] InGameState gameModeState;
     [SerializeField] EGameState ingameState;
 
 
-    int curStage;
-    [HideInInspector] public float timer = 0f;
+    // about input
+    [Header("Input State")]
+    public bool isRightDown;
+    public bool isRightHold;
 
-    IGameLogic curGameLogic;
+    public bool isLeftDown;
+    public bool isLeftHold;
 
     KeyCode[] leftKeyCode = new KeyCode[4] { KeyCode.F, KeyCode.D, KeyCode.S, KeyCode.A };
     KeyCode[] rightKeyCode = new KeyCode[4] { KeyCode.J, KeyCode.K, KeyCode.L, KeyCode.Semicolon };
 
+
+    // about note
+    [Header("Note")]
+    [SerializeField] Note notPrefab;
+    [SerializeField] Transform noteParent;
+    [SerializeField] int allocCnt;
+
+    Stack<Note> notePool = new Stack<Note>();
     Queue<Note> leftNoteQueue = new Queue<Note>();
     Queue<Note> rightNoteQueue = new Queue<Note>();
 
-    [Header("Note")]
-    [SerializeField] SingleNote singleNotePrefab;
-    [SerializeField] LongNote longNotePrefab;
-    [SerializeField] Transform noteParent;
-    [SerializeField] int allocCnt;
-    Stack<Note> singleNotePool = new Stack<Note>();
-    Stack<Note> longNotePool = new Stack<Note>();
 
-
+    // default function
     void Start()
     {
         for (int i = 0; i < allocCnt; i++)
         {
-            var singleN = Instantiate(singleNotePrefab, noteParent);
-            var longN = Instantiate(longNotePrefab, noteParent);
+            var temp = Instantiate(notPrefab, noteParent);
 
-            singleN.gameObject.SetActive(false);
-            longN.gameObject.SetActive(false);
-            singleNotePool.Push(singleN);
-            longNotePool.Push(longN);
+            temp.gameObject.SetActive(false);
+            notePool.Push(temp);
         }
 
         switch (gameModeState)
@@ -79,41 +96,13 @@ public class InGameManager : MonoBehaviour
         }
 
         curGameLogic.Start();
+        StartCoroutine(TestGameLogic());
     }
-
     void Update()
     {
-        switch (ingameState)
-        {
-            case EGameState.Intro:
-                IntroLogic();
-                break;
-            case EGameState.InGame:
-                InGameLogic();
-                InputCheckObject();
-                break;
-            case EGameState.Outro:
-                OutroLogic();
-                break;
-        }
-
-        timer += Time.deltaTime;
+        InGameLogic();
+        InputCheckObject();
     }
-
-    public void SetAnimState(int dir, EHitState type, bool wait = false)
-    {
-        if ((wait && track.IsComplete) || !wait)
-            aniTrigger = true;
-
-        dirIdx += dir;
-        hitType = type;
-    }
-
-    bool aniTrigger;
-    int dirIdx;
-    EHitState hitType; // 0 : single, 1 : hold, 2 : hold exit
-
-    TrackEntry track = null;
     private void FixedUpdate()
     {
         if (aniTrigger)
@@ -139,17 +128,17 @@ public class InGameManager : MonoBehaviour
         {
             switch (state)
             {
-                case EHitState.SINGLE:
+                case EHitState.DOWN:
                     if (dir == -1) return "Left_1";
                     if (dir == 1) return "Right_1";
                     if (dir == 0) return "Both";
                     break;
-                case EHitState.LONG:
+                case EHitState.HOLD:
                     if (dir == -1) return "Left_H";
                     if (dir == 1) return "Right_H";
                     if (dir == 0) return "Both_H";
                     break;
-                case EHitState.LONG_END:
+                case EHitState.HOLD_END:
                     if (dir == -1) return "Left_HE";
                     if (dir == 1) return "Right_HE";
                     if (dir == 0) return "Both_HE";
@@ -160,35 +149,30 @@ public class InGameManager : MonoBehaviour
         }
     }
 
-    void IntroLogic()
+    // about animatino function
+    public void SetAnimState(int dir, EHitState type, bool wait = false)
     {
-        if (timer >= 1f)
-        {
-            timer = 0f;
-            StartCoroutine(TestGameLogic());
-            ingameState = EGameState.InGame;
-        }
+        if ((wait && track.IsComplete) || !wait)
+            aniTrigger = true;
+
+        dirIdx += dir;
+        hitType = type;
     }
 
+    // about game logic function
     IEnumerator TestGameLogic()
     {
         while (true)
         {
-            ShowNote(EHitState.SINGLE, -1);
-            yield return new WaitForSeconds(0.25f);
-            ShowNote(EHitState.SINGLE, 1);
-            yield return new WaitForSeconds(0.25f);
-            ShowNote(EHitState.SINGLE, -1);
-            ShowNote(EHitState.SINGLE, 1);
-            yield return new WaitForSeconds(0.25f);
+            ShowNote(ENoteType.LONG, -1, 5f, 1f);
+            yield return new WaitForSeconds(3f);
+            ShowNote(ENoteType.LONG, 1, 5f, 1f);
+            yield return new WaitForSeconds(3f);
+            ShowNote(ENoteType.LONG, -1, 5f, 1.5f);
+            ShowNote(ENoteType.LONG, 1, 5f, 1.5f);
+            yield return new WaitForSeconds(3f);
         }
     }
-
-    public bool isRightDown;
-    public bool isRightHold;
-
-    public bool isLeftDown;
-    public bool isLeftHold;
     void InGameLogic()
     {
         curGameLogic.Play();
@@ -196,6 +180,8 @@ public class InGameManager : MonoBehaviour
         CheckInputCondition();
         CheckNoteCondition();
     }
+
+    // about input function
     void CheckInputCondition()
     {
         for (int i = 0; i < 4; i++)
@@ -234,11 +220,6 @@ public class InGameManager : MonoBehaviour
             leftNoteQueue.First().CheckState();
         }
     }
-
-    void OutroLogic()
-    {
-        curGameLogic.Outro();
-    }
     void InputCheckObject()
     {
         int dir = 0;
@@ -257,22 +238,23 @@ public class InGameManager : MonoBehaviour
         gameUIManager.SetInputCheckActive(dir, active);
     }
 
-    public void ShowNote(EHitState state, int dir)
+    // about note function
+    public void ShowNote(ENoteType state, int dir, float speed, float dur = 0f)
     {
         var note = PopNotePool();
-        note.Init(state, dir, 3);
+        note.Init(state, dir, speed, dur);
         (dir == 1 ? rightNoteQueue : leftNoteQueue).Enqueue(note);
     }
     public Note PopNotePool()
     {
-        var result = singleNotePool.Pop();
+        var result = notePool.Pop();
         result.gameObject.SetActive(true);
         return result;
     }
     public void PushNote(Note note)
     {
         note.gameObject.SetActive(false);
-        singleNotePool.Push(note);
+        notePool.Push(note);
     }
     public void RemoveQueue(int dir)
     {

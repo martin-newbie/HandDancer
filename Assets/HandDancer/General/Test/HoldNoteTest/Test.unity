@@ -420,7 +420,7 @@ MonoBehaviour:
   glow: {fileID: 30693075}
   verticesCount: 10
   radius: 4
-  dir: 1
+  dir: -1
 --- !u!4 &584971418
 Transform:
   m_ObjectHideFlags: 0

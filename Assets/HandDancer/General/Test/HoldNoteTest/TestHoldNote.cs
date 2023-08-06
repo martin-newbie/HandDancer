@@ -29,7 +29,7 @@ public class TestHoldNote : MonoBehaviour
         float angle = 90f / (vertices.Length - 1);
         for (int i = vertices.Length - 1; i >= 0; i--)
         {
-            vertices[i] = transform.position + new Vector3(Mathf.Cos((angle * i * dir - 45f) * Mathf.Deg2Rad) * radius, Mathf.Sin((angle * i * dir - 45f) * Mathf.Deg2Rad) * radius);
+            vertices[i] = transform.position + new Vector3(Mathf.Cos((angle * i - 45f) * Mathf.Deg2Rad) * radius * dir, Mathf.Sin((angle * i - 45f) * Mathf.Deg2Rad) * radius);
         }
 
         cur -= Time.deltaTime;

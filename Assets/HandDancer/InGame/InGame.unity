@@ -594,14 +594,13 @@ MonoBehaviour:
   gameUIManager: {fileID: 665649759}
   gameModeState: 0
   ingameState: 0
-  timer: 0
-  prefab: {fileID: 7427316518723841194, guid: dae54769f04b7284a8e68c73bf4a8a9e, type: 3}
-  noteParent: {fileID: 1853699468}
-  allocCnt: 100
   isRightDown: 0
   isRightHold: 0
   isLeftDown: 0
   isLeftHold: 0
+  notPrefab: {fileID: 164689945639415769, guid: dae54769f04b7284a8e68c73bf4a8a9e, type: 3}
+  noteParent: {fileID: 1853699468}
+  allocCnt: 100
 --- !u!114 &665649759
 MonoBehaviour:
   m_ObjectHideFlags: 0
