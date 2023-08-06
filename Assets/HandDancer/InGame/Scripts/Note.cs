@@ -34,14 +34,10 @@ public class Note : MonoBehaviour
 
     IEnumerator MoveRoutine(float dur)
     {
-        Vector3 start = new Vector3(5f * dir, 0);
-        Vector3 end = Vector3.zero;
-        transform.position = start;
 
         float timer = 0f;
         while (timer < dur)
         {
-            transform.position = Vector3.Lerp(start, end, timer / dur);
             radius = Mathf.Lerp(startRad, targetRad, timer / dur);
             timer += Time.deltaTime;
             yield return null;
@@ -63,13 +59,13 @@ public class Note : MonoBehaviour
             {
                 // perfect
                 InGameManager.Instance.SetAnimState(dir, type);
-                pushNote();
+                pushNote("perfect");
             }
             else
             {
                 // great
                 InGameManager.Instance.SetAnimState(dir, type);
-                pushNote();
+                pushNote("great");
             }
 
         }
@@ -77,11 +73,14 @@ public class Note : MonoBehaviour
         if (radius <= 2.85f)
         {
             // miss
-            pushNote();
+            pushNote("miss");
         }
 
-        void pushNote()
+        void pushNote(string condition)
         {
+            Debug.Log(condition);
+
+            StopAllCoroutines();
             InGameManager.Instance.RemoveQueue(dir);
             InGameManager.Instance.PushNote(this);
         }
