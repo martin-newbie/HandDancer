@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2203726160409738985}
   - component: {fileID: 2203726160409738983}
-  - component: {fileID: 7427316518723841194}
+  - component: {fileID: 1403646088506467823}
   m_Layer: 0
-  m_Name: Note
+  m_Name: SingleNote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -144,7 +144,7 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &7427316518723841194
+--- !u!114 &1403646088506467823
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,8 +153,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2203726160409738984}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d435a52c27a0614fa9af56a4e63648f, type: 3}
+  m_Script: {fileID: 11500000, guid: 094f2579cd9f48447a228f8b69f3a0dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertices: 15
   dir: 0
   radius: 0

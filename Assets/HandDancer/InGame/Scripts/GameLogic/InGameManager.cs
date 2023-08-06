@@ -15,7 +15,7 @@ public enum EGameState
 public enum EHitState
 {
     SINGLE,
-    HOLD,
+    LONG,
     LONG_END,
 }
 
@@ -47,19 +47,25 @@ public class InGameManager : MonoBehaviour
     Queue<Note> rightNoteQueue = new Queue<Note>();
 
     [Header("Note")]
-    [SerializeField] Note prefab;
+    [SerializeField] SingleNote singleNotePrefab;
+    [SerializeField] LongNote longNotePrefab;
     [SerializeField] Transform noteParent;
     [SerializeField] int allocCnt;
-    Stack<Note> notePool = new Stack<Note>();
+    Stack<Note> singleNotePool = new Stack<Note>();
+    Stack<Note> longNotePool = new Stack<Note>();
 
 
     void Start()
     {
         for (int i = 0; i < allocCnt; i++)
         {
-            var temp = Instantiate(prefab, noteParent);
-            temp.gameObject.SetActive(false);
-            notePool.Push(temp);
+            var singleN = Instantiate(singleNotePrefab, noteParent);
+            var longN = Instantiate(longNotePrefab, noteParent);
+
+            singleN.gameObject.SetActive(false);
+            longN.gameObject.SetActive(false);
+            singleNotePool.Push(singleN);
+            longNotePool.Push(longN);
         }
 
         switch (gameModeState)
@@ -94,9 +100,11 @@ public class InGameManager : MonoBehaviour
         timer += Time.deltaTime;
     }
 
-    public void SetAnimState(int dir, EHitState type)
+    public void SetAnimState(int dir, EHitState type, bool wait = false)
     {
-        aniTrigger = true;
+        if ((wait && track.IsComplete) || !wait)
+            aniTrigger = true;
+
         dirIdx += dir;
         hitType = type;
     }
@@ -136,7 +144,7 @@ public class InGameManager : MonoBehaviour
                     if (dir == 1) return "Right_1";
                     if (dir == 0) return "Both";
                     break;
-                case EHitState.HOLD:
+                case EHitState.LONG:
                     if (dir == -1) return "Left_H";
                     if (dir == 1) return "Right_H";
                     if (dir == 0) return "Both_H";
@@ -216,12 +224,12 @@ public class InGameManager : MonoBehaviour
     }
     void CheckNoteCondition()
     {
-        if(rightNoteQueue.Count > 0)
+        if (rightNoteQueue.Count > 0)
         {
             rightNoteQueue.First().CheckState();
         }
 
-        if(leftNoteQueue.Count > 0)
+        if (leftNoteQueue.Count > 0)
         {
             leftNoteQueue.First().CheckState();
         }
@@ -257,14 +265,14 @@ public class InGameManager : MonoBehaviour
     }
     public Note PopNotePool()
     {
-        var result = notePool.Pop();
+        var result = singleNotePool.Pop();
         result.gameObject.SetActive(true);
         return result;
     }
     public void PushNote(Note note)
     {
         note.gameObject.SetActive(false);
-        notePool.Push(note);
+        singleNotePool.Push(note);
     }
     public void RemoveQueue(int dir)
     {
