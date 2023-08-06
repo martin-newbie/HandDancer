@@ -40,9 +40,6 @@ public class InGameManager : MonoBehaviour
 
     IGameLogic curGameLogic;
 
-    bool[] leftInputState = new bool[4];
-    bool[] rightInputState = new bool[4];
-
     KeyCode[] leftKeyCode = new KeyCode[4] { KeyCode.F, KeyCode.D, KeyCode.S, KeyCode.A };
     KeyCode[] rightKeyCode = new KeyCode[4] { KeyCode.J, KeyCode.K, KeyCode.L, KeyCode.Semicolon };
 
@@ -170,17 +167,20 @@ public class InGameManager : MonoBehaviour
         while (true)
         {
             ShowNote(EHitState.SINGLE, -1);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(0.25f);
+            ShowNote(EHitState.SINGLE, 1);
+            yield return new WaitForSeconds(0.25f);
+            ShowNote(EHitState.SINGLE, -1);
+            ShowNote(EHitState.SINGLE, 1);
+            yield return new WaitForSeconds(0.25f);
         }
     }
 
     public bool isRightDown;
     public bool isRightHold;
-    public bool isRightUp;
 
     public bool isLeftDown;
     public bool isLeftHold;
-    public bool isLeftUp;
     void InGameLogic()
     {
         curGameLogic.Play();
@@ -192,58 +192,26 @@ public class InGameManager : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            bool cur = Input.GetKey(rightKeyCode[i]);
-            bool prev = rightInputState[i];
-            isRightDown = IsDown(cur, prev);
-            rightInputState[i] = cur;
-
+            isRightDown = Input.GetKeyDown(rightKeyCode[i]);
             if (isRightDown) break;
         }
 
         for (int i = 0; i < 4; i++)
         {
-            bool cur = Input.GetKey(leftKeyCode[i]);
-            bool prev = leftInputState[i];
-            isLeftDown = IsDown(cur, prev);
-            leftInputState[i] = cur;
-
+            isLeftDown = Input.GetKeyDown(leftKeyCode[i]);
             if (isLeftDown) break;
         }
 
         for (int i = 0; i < 4; i++)
         {
-            bool cur = Input.GetKey(rightKeyCode[i]);
-            isRightHold = IsHold(cur, rightInputState);
-            rightInputState[i] = cur;
-
+            isRightHold = Input.GetKey(rightKeyCode[i]);
             if (isRightHold) break;
         }
 
         for (int i = 0; i < 4; i++)
         {
-            bool cur = Input.GetKey(leftKeyCode[i]);
-            isLeftHold = IsHold(cur, leftInputState);
-            leftInputState[i] = cur;
-
+            isLeftHold = Input.GetKey(leftKeyCode[i]);
             if (isLeftHold) break;
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            bool cur = Input.GetKey(rightKeyCode[i]);
-            isRightUp = IsUp(cur, rightInputState);
-            rightInputState[i] = cur;
-
-            if (isRightUp) break;
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            bool cur = Input.GetKey(leftKeyCode[i]);
-            isLeftUp = IsUp(cur, leftInputState);
-            leftInputState[i] = cur;
-
-            if (isLeftUp) break;
         }
     }
     void CheckNoteCondition()
@@ -259,20 +227,6 @@ public class InGameManager : MonoBehaviour
         }
     }
 
-    bool IsDown(bool cur, bool prev)
-    {
-        return cur && !prev;
-    }
-    bool IsHold(bool cur, bool[] total)
-    {
-        return cur && total.Contains(true);
-    }
-    bool IsUp(bool cur, bool[] total)
-    {
-        return !cur && !total.Contains(true);
-    }
-
-
     void OutroLogic()
     {
         curGameLogic.Outro();
@@ -281,34 +235,18 @@ public class InGameManager : MonoBehaviour
     {
         int dir = 0;
         bool active = false;
-        if (GetRightDown())
+        if (isRightHold || isRightDown)
         {
             dir += 1;
             active = true;
         }
-        if (GetLeftDown())
+        if (isLeftHold || isLeftDown)
         {
             dir -= 1;
             active = true;
         }
 
         gameUIManager.SetInputCheckActive(dir, active);
-    }
-    bool GetRightDown()
-    {
-        foreach (var item in rightInputState)
-        {
-            if (item) return true;
-        }
-        return false;
-    }
-    bool GetLeftDown()
-    {
-        foreach (var item in leftInputState)
-        {
-            if (item) return true;
-        }
-        return false;
     }
 
     public void ShowNote(EHitState state, int dir)

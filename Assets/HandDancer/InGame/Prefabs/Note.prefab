@@ -91,7 +91,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.2
+    widthMultiplier: 0.5
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -156,3 +156,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d435a52c27a0614fa9af56a4e63648f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dir: 0
+  radius: 0

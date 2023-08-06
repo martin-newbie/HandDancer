@@ -22,6 +22,7 @@ public class Note : MonoBehaviour
     [SerializeField] float radius;
 
     bool isInit;
+    Coroutine moveRoutine;
 
     public void Init(EHitState type, int dir, float dur)
     {
@@ -29,12 +30,12 @@ public class Note : MonoBehaviour
         this.dir = dir;
 
         isInit = true;
-        StartCoroutine(MoveRoutine(dur));
+        radius = startRad;
+        moveRoutine = StartCoroutine(MoveRoutine(dur));
     }
 
     IEnumerator MoveRoutine(float dur)
     {
-
         float timer = 0f;
         while (timer < dur)
         {
@@ -78,9 +79,10 @@ public class Note : MonoBehaviour
 
         void pushNote(string condition)
         {
-            Debug.Log(condition);
+            if (moveRoutine != null)
+                StopCoroutine(moveRoutine);
 
-            StopAllCoroutines();
+            radius = startRad;
             InGameManager.Instance.RemoveQueue(dir);
             InGameManager.Instance.PushNote(this);
         }
@@ -104,7 +106,7 @@ public class Note : MonoBehaviour
         float angle = 180f / vertices;
         for (int i = 0; i <= vertices; i++)
         {
-            verticePos[i] = transform.position + new Vector3(Mathf.Cos((angle * i * dir - 90f * dir) * Mathf.Deg2Rad) * radius, Mathf.Sin((angle * i * dir - 90f * dir) * Mathf.Deg2Rad) * radius);
+            verticePos[i] = transform.position + new Vector3(Mathf.Cos((angle * i * dir - 90f) * Mathf.Deg2Rad) * radius, Mathf.Sin((angle * i * dir - 90f) * Mathf.Deg2Rad) * radius);
         }
         line.SetPositions(verticePos);
 
