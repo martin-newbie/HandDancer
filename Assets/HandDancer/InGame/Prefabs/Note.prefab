@@ -51,7 +51,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 9ca8df0f097d4e2489c4d91fbe929758, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,6 +156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d435a52c27a0614fa9af56a4e63648f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertices: 15
+  startRad: 10
+  targetRad: 0
   dir: 0
   dur: 0
   rad: 0

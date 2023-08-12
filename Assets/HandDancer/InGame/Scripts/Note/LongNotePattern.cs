@@ -32,6 +32,7 @@ public class LongNotePattern : INotePattern
             {
                 curState = 1;
                 InGameManager.Instance.SetAnimState(dir, EHitState.HOLD);
+                subject.rad = 3.11f;
                 subject.TryStopMoveCoroutine();
             }
             if (HoldCondition() && curState == 1)
