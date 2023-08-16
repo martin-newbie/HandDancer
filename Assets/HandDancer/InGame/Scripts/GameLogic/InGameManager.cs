@@ -36,13 +36,8 @@ public class InGameManager : MonoBehaviour
 
     // about animation
     [SerializeField] SkeletonGraphic anim;
-    TrackEntry track;
-    EHitState hitType;
-
-    int dirIdx;
-    bool aniTrigger;
-
     IGameLogic curGameLogic;
+
     [SerializeField] PlayUIManager gameUIManager;
 
     // about info
@@ -73,6 +68,7 @@ public class InGameManager : MonoBehaviour
     Queue<Note> leftNoteQueue = new Queue<Note>();
     Queue<Note> rightNoteQueue = new Queue<Note>();
 
+    float cool;
 
     // default function
     void Start()
@@ -102,61 +98,71 @@ public class InGameManager : MonoBehaviour
     {
         InGameLogic();
         InputCheckObject();
-    }
-    private void FixedUpdate()
-    {
-        if (aniTrigger)
-        {
-            dirIdx = Mathf.Clamp(dirIdx, -1, 1);
-            string aniKey = getAniKey(hitType, dirIdx);
-            track = anim.AnimationState.SetAnimation(0, aniKey, false);
-            track.MixDuration = 0f;
 
-            aniTrigger = false;
-            dirIdx = 0;
-            hitType = 0;
-        }
-
-        if (track == null || track.IsComplete)
-        {
-            track = anim.AnimationState.SetAnimation(0, "idling", true);
-            track.MixDuration = 0f;
-        }
-
-
-        string getAniKey(EHitState state, int dir)
-        {
-            switch (state)
-            {
-                case EHitState.DOWN:
-                    if (dir == -1) return "Left_1";
-                    if (dir == 1) return "Right_1";
-                    if (dir == 0) return "Both";
-                    break;
-                case EHitState.HOLD:
-                    if (dir == -1) return "Left_H";
-                    if (dir == 1) return "Right_H";
-                    if (dir == 0) return "Both_H";
-                    break;
-                case EHitState.HOLD_END:
-                    if (dir == -1) return "Left_HE";
-                    if (dir == 1) return "Right_HE";
-                    if (dir == 0) return "Both_HE";
-                    break;
-            }
-
-            return null;
-        }
+        if (cool > 0f) cool -= Time.deltaTime;
     }
 
     // about animatino function
+    string prevKey = "";
+    int prevDir;
+    EHitState prevType;
+    TrackEntry curTrack;
     public void SetAnimState(int dir, EHitState type, bool wait = false)
     {
-        if ((wait && track.IsComplete) || !wait)
-            aniTrigger = true;
+        if (cool <= 0f)
+        { // check without cool time
+            string aniKey = GetAniKey(type, dir);
+            if (!wait || (wait && prevKey == aniKey && anim.AnimationState.Tracks.ElementAt(0).IsComplete))
+            {
+                curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
+                curTrack.MixDuration = 0;
+            }
+        }
+        else
+        { // check with cool time
+            if (prevType == type && prevDir != dir)
+            {
+                string aniKey = GetAniKey(type, 0);
+                curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
+                curTrack.MixDuration = 0;
+            }
+            else
+            {
+                string aniKey = GetAniKey(type, dir);
+                curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
+                curTrack.MixDuration = 0;
+            }
+        }
 
-        dirIdx += dir;
-        hitType = type;
+        prevDir = dir;
+        prevType = type;
+        cool = 0.25f;
+
+
+    }
+
+    string GetAniKey(EHitState state, int dir)
+    {
+        switch (state)
+        {
+            case EHitState.DOWN:
+                if (dir == -1) return "Left_1";
+                if (dir == 1) return "Right_1";
+                if (dir == 0) return "Both";
+                break;
+            case EHitState.HOLD:
+                if (dir == -1) return "Left_H";
+                if (dir == 1) return "Right_H";
+                if (dir == 0) return "Both_H";
+                break;
+            case EHitState.HOLD_END:
+                if (dir == -1) return "Left_HE";
+                if (dir == 1) return "Right_HE";
+                if (dir == 0) return "Both_HE";
+                break;
+        }
+
+        return null;
     }
 
     // about game logic function
