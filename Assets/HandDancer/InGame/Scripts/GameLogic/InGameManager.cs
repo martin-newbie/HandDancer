@@ -111,26 +111,17 @@ public class InGameManager : MonoBehaviour
     {
         if (cool <= 0f)
         { // check without cool time
-            string aniKey = GetAniKey(type, dir);
-            if (!wait || (wait && prevKey == aniKey && anim.AnimationState.Tracks.ElementAt(0).IsComplete))
-            {
-                curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
-                curTrack.MixDuration = 0;
-            }
+            playCommonCase();
         }
         else
         { // check with cool time
             if (prevType == type && prevDir != dir)
             {
-                string aniKey = GetAniKey(type, 0);
-                curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
-                curTrack.MixDuration = 0;
+                playAni(GetAniKey(type, 0));
             }
             else
             {
-                string aniKey = GetAniKey(type, dir);
-                curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
-                curTrack.MixDuration = 0;
+                playCommonCase();
             }
         }
 
@@ -138,7 +129,21 @@ public class InGameManager : MonoBehaviour
         prevType = type;
         cool = 0.25f;
 
+        void playCommonCase()
+        {
+            string aniKey = GetAniKey(type, dir);
+            if (!wait || (wait && prevKey == aniKey && anim.AnimationState.Tracks.ElementAt(0).IsComplete))
+            {
+                playAni(aniKey);
+            }
+        }
 
+        void playAni(string aniKey)
+        {
+            curTrack = anim.AnimationState.SetAnimation(0, aniKey, false);
+            curTrack.MixDuration = 0;
+            prevKey = aniKey;
+        }
     }
 
     string GetAniKey(EHitState state, int dir)
